@@ -7,7 +7,7 @@ import tqdm
 import utils
 
 DATASET = 'ISRUC'
-DATA_PATH = '/home/dvd/Datasets/high_modality/eeg/ISRUC_SLEEP'
+DATA_PATH = '<path>'
 ALL_CHANNELS = tuple(['F3', 'F4', 'C3', 'C4', 'O1', 'O2'])
 CHANNELS = tuple(['C3', 'C4'])
 CLASSES = ['W', 'N1', 'N2', 'N3', 'R']

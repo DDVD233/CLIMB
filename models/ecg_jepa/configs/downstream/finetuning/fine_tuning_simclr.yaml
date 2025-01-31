@@ -1,0 +1,29 @@
+dataloader:
+  batch_size: 16
+  num_workers: 8
+
+train:
+  epochs: 10
+  accum_iter: 1
+  warmup_epochs: 3
+  min_lr: 0
+  blr: 1.0e-4
+  lr: null
+  weight_decay: 0.05
+  dist_eval: false
+  max_norm: null
+  optimizer: adamw
+
+metric:
+  task: null
+  compute_on_cpu: true
+  sync_on_compute: false
+  target_metrics:
+  - Accuracy
+  - F1Score:
+      average: macro
+  - AUROC:
+      average: macro
+
+test:
+  target_metric: loss

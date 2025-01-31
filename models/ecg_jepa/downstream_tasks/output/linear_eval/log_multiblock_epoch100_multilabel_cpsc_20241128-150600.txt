@@ -1,0 +1,39 @@
+2024-11-28 15:06:00,545 - INFO - Configuration:
+2024-11-28 15:06:00,546 - INFO - ckpt_dir: ../weights/multiblock_epoch100.pth
+data_dir: /mount/ecg/cpsc_2018/
+data_percentage: 1.0
+dataloader:
+  batch_size: 16
+  num_workers: 8
+dataset: cpsc
+metric:
+  compute_on_cpu: true
+  sync_on_compute: false
+  target_metrics:
+  - Accuracy
+  - F1Score:
+      average: macro
+  - AUROC:
+      average: macro
+  task: null
+output_dir: ./output/linear_eval
+task: multilabel
+test:
+  target_metric: loss
+train:
+  accum_iter: 1
+  blr: null
+  dist_eval: false
+  epochs: 10
+  lr: 0.01
+  max_norm: null
+  min_lr: 0
+  optimizer: adamw
+  warmup_epochs: 3
+  weight_decay: 0.005
+
+2024-11-28 15:06:00,546 - INFO - Loading cpsc dataset...
+2024-11-28 15:06:13,817 - INFO - Loading encoder from ../weights/multiblock_epoch100.pth...
+2024-11-28 15:06:15,458 - INFO - Start training...
+2024-11-28 15:07:07,551 - INFO - Trial 1: AUC: 0.971, F1: 0.789
+2024-11-28 15:07:07,551 - INFO - Mean AUC: 0.971 +- 0.000, Mean F1: 0.789 +- 0.000

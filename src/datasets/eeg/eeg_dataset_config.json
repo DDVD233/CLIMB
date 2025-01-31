@@ -1,0 +1,186 @@
+{
+  "AuditoryOddballDelorme2020": {
+
+    "bids_config": {
+      "datatype": "eeg",
+      "task": "P300",
+      "extension": ".set",
+      "suffix": "eeg"
+    },
+
+      "preprocessing_config": {
+
+        "montage_name": "biosemi64",
+
+        "epoch_window": {
+          "t_min": -0.1,
+          "t_max": 0.8,
+          "include_t_max": false
+        },
+        "baseline": [-0.1, 0],
+
+        "filter_config": {
+          "low_cut": 0.5,
+          "high_cut": 50,
+          "notch_freqs": [
+            60,
+            120
+          ]
+        },
+
+        "resample_fs": 250
+      },
+
+      "event_ids": {
+        "response": 1,
+        "stimulus/standard": 2,
+        "stimulus/ignore": 3,
+        "stimulus/oddball": 4,
+        "stimulus/noise": 5,
+        "stimulus/condition_5": 6,
+        "stimulus/noise_with_reponse": 7,
+        "stimulus/oddball_with_reponse": 8,
+        "stimulus/standard_with_reponse": 9,
+        "STATUS": 10
+    },
+
+      "y_labels": {
+          "stimulus/standard": 0,
+          "stimulus/oddball_with_response": 1
+      },
+
+    "Description": "The auditory oddball dataset, there are 10 different classes. The label that we are really interested is stimulus/standard : 2 and stimulus/oddball_with_response : 8. The binary classification is done between those two classes usually. Task: classify standard (0) vs oddball stimuli (1)."
+
+  },
+
+
+
+  "FACED": {
+
+
+
+     "preprocessing_config": {
+
+      "montage_name": "standard_1020",
+
+      "filter_config": {
+        "low_cut": 0.05,
+        "high_cut": 47
+      },
+      "resample_fs": 250
+
+    },
+
+
+    "video_labels": {
+          "Angry": [0, 1, 2],
+          "Disgust": [3, 4, 5],
+          "Fear": [6, 7, 8],
+          "Sadness": [9, 10, 11],
+          "Neutral": [12, 13, 14, 15],
+          "Amusement": [16, 17, 18],
+          "Inspiring": [19, 20, 21],
+          "Joy": [22, 23, 24],
+          "Tenderness": [25, 26, 27]
+    },
+
+    "video_to_labels": {
+          "Angry": "Negative",
+          "Disgust": "Negative",
+          "Fear": "Negative",
+          "Sadness": "Negative",
+          "Neutral": "Neutral",
+          "Amusement": "Positive",
+          "Inspiring": "Positive",
+          "Joy": "Positive",
+          "Tenderness": "Positive"
+    },
+
+    "ch_names": [
+        "Fp1", "Fp2", "Fz", "F3", "F4", "F7", "F8", "FC1",
+        "FC2", "FC5", "FC6", "Cz", "C3", "C4", "T3", "T4",
+        "CP1", "CP2", "CP5", "CP6", "Pz", "P3", "P4", "T5",
+        "T6", "PO3", "PO4", "Oz", "O1", "O2", "A1", "A2"
+    ],
+
+
+    "y1_labels": {
+        "Negative": 0,
+        "Positive": 1
+    },
+
+    "y2_labels": {
+        "Angry": 0,
+        "Disgust": 1,
+        "Fear": 2,
+        "Sadness": 3,
+        "Amusement": 4,
+        "Inspiring": 5,
+        "Joy": 6,
+        "Tenderness": 7
+    },
+
+
+    "Description": "The FACED EEG dataset, containing data from 128 subjects, consists of 3D arrays shaped as (n_samples, n_channels, n_times) where each sample is 30 seconds (note: the last 30 seconds data from each video clip) of EEG data sampled resampled to 250Hz; during training, the data is further segmented into smaller windows (1 second) for model input. Task: classify positive vs negative emotions, and classify 8 different emotions."
+
+    },
+
+
+    "BCICompetitionIV2a": {
+
+        "preprocessing_config": {
+
+          "montage_name": "standard_1020",
+
+          "epoch_window": {
+            "t_min": 0,
+            "t_max": 4,
+            "include_t_max": false
+          },
+
+          "filter_config": {
+          "low_cut": 0.5,
+          "high_cut": 50
+            },
+            "resample_fs": 250
+        },
+
+        "event_ids": {
+            "left_hand": 1,
+            "right_hand": 2,
+            "foot": 3,
+            "tongue": 4
+        },
+
+        "y_labels": {
+            "left_hand": 0,
+            "right_hand": 1,
+            "foot": 2,
+            "tongue": 3
+        },
+
+      "ch_names" : [
+        "Fz", "FC3", "FC1", "FCz", "FC2", "FC4", "C5",
+        "C3", "C1", "Cz", "C2", "C4", "C6", "CP3", "CP1",
+        "CPz", "CP2", "CP4", "P1", "Pz", "P2", "POz"
+      ],
+
+      "Description": "The BCI Competition IV 2a dataset (BCIIV2a), containing data from 9 subjects. Each subject has two sessions ('T' and 'E') of 6 runs each. Each run consists of 48 trials, 12 for each of the four possible classes (left hand, right hand, foot, tongue). The data is recorded with a sampling rate of 250Hz and contains 22 EEG channels. The data is provided in 3D arrays shaped as (n_samples, n_channels, n_times) where each sample is 4 seconds of EEG data. The sample with artifact is removed from the dataset. Task: classify left hand, right hand, foot, and tongue motor imagery."
+    }
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

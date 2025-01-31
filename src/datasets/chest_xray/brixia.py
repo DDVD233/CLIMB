@@ -193,11 +193,3 @@ class BRIXIA(Dataset):
         return [
             Input2dSpec(input_size=BRIXIA.INPUT_SIZE, patch_size=BRIXIA.PATCH_SIZE, in_channels=BRIXIA.IN_CHANNELS),
         ]
-
-
-if __name__ == '__main__':
-    dataset = BRIXIA('/Users/dvd/downloads/high_modality', download=True, train=True)
-    dataset.to_qa()
-    dataset = BRIXIA('/Users/dvd/downloads/high_modality', download=True, train=False)
-    dataset.to_qa()
-    print('Done')

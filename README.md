@@ -13,6 +13,8 @@ CLIMB comprises:
 - 96 different clinical conditions
 - 13 clinical domains
 
+A list of the datasets included in CLIMB can be found in the `Dataset_Info.md` file.
+
 ### Data Distribution
 
 - 40.56% - 3D/Video samples (ultrasounds, CT scans, endoscopic images, MRI images)
@@ -20,32 +22,6 @@ CLIMB comprises:
 - 19.31% - 1D data (EHR, EEG, ECG, gait and genomic data)
 - 15.68% - 2D imaging data (X-rays, dermoscopy, fundus images, pathology slides)
 - 1.54% - Graph data (brain networks, molecules)
-
-## Key Features and Findings
-
-### Multitask Training Performance
-- Significant performance improvements across clinical tasks
-- Up to 32.54% AUC improvement in COVID ultrasound and other understudied areas
-- General-domain architectures outperform specialized clinical models in multitask settings
-
-### Few-shot Transfer Learning
-- Enhanced generalization to novel clinical tasks with limited labeled data
-- Up to 29% improvement in ultrasound tasks
-- Up to 23% improvement in ECG tasks under few-shot settings
-
-### Multimodal Fusion
-- Improved performance through single-modality pretraining
-- Enhanced multimodal learning with task-appropriate fusion strategies
-- Comprehensive evaluation of different combination strategies for clinical data
-
-## Available Resources
-
-- Vision, EEG, and ECG encoders trained on CLIMB
-- State-of-the-art performance on multitask clinical learning tasks
-- Complete codebase for data collection, training, and evaluation
-- Pre-trained model weights (Not included on Anonymous GitHub Due to Size Limitations)
-- Detailed recommendations for model architecture selection
-- Comprehensive pretraining strategies across clinical modalities
 
 ## Folder Structure
 

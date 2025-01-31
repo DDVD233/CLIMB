@@ -355,13 +355,6 @@ This document provides detailed information about each dataset included in the C
 - **License**: PhysioNet Credentialed Health Data License 1.5.0
 - **Access**: Requires credentialed account and CITI training
 
-## Access and Ethical Considerations
-- No personally identifiable information is present in any dataset
-- No offensive content is present
-- Most datasets require specific access permissions and agreements
-- Many datasets are available under various Creative Commons licenses
-- Some datasets require institutional credentials or training certificates
-
 ## Usage Guidelines
 1. Respect all data usage agreements and licenses
 2. Follow proper citation practices when using these datasets

@@ -2,7 +2,9 @@
 
 CLIMB is a comprehensive multimodal clinical benchmark that unifies diverse medical data across imaging, language, temporal, and genomic modalities. This framework enables holistic assessment of patient health by leveraging multiple data types and demonstrating significant improvements in clinical task performance.
 
-This dataset framework is built on top of the [BenchMD](https://github.com/rajpurkarlab/BenchMD) repo, with added datasets from EEG, pathology, mammography, X-ray, and other clinical domains.
+This dataset framework is built on top of the [BenchMD](https://github.com/rajpurkarlab/BenchMD) repo, with redesigned datasets and models from EEG, pathology, mammography, X-ray, and other clinical domains. 
+
+We also built a downloader framework so that you can download datasets with gated access easily. The downloader framework currently supports all datasets on PhysioNet, Github and Kaggle, with more to come.
 
 ## Dataset Overview
 
@@ -13,7 +15,7 @@ CLIMB comprises:
 - 96 different clinical conditions
 - 13 clinical domains
 
-A list of the datasets included in CLIMB can be found in the `Dataset_Info.md` file. 
+A list of the datasets included in CLIMB can be found in the [Dataset Info](Dataset_Info.md). 
 
 # How to download:
 ## Downloading entire dataset
@@ -25,7 +27,7 @@ If we run this code from the root directory, the dataset will be downloaded to t
 Each dataset will be in its own directory, and the dataset directories are categorized by modality.
 For example, Brain Tumor 2 will be downloaded to `data/mri/brain_tumor_2`.
 
-To see other ways to download the dataset, please refer to the `DOWNLOADER.md` file.
+To see other ways to download the dataset, please refer to the [Download Instructions](DOWNLOADER.md).
 
 ### Data Distribution
 

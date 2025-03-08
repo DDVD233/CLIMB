@@ -175,7 +175,7 @@ def load_dataset_with_retry(dataset_name, cache_dir, max_retries=3):
 
 if __name__ == "__main__":
     # Configuration
-    cache_dir = "<file_path>"
+    cache_dir = "/home/dvd/high_modality/laion2B-en"
     BATCH_SIZE = 1024  # Adjust based on your GPU memory
     CHECKPOINT_INTERVAL = 100
 

@@ -201,3 +201,10 @@ class CheXpert_Full(VisionDataset):
                 in_channels=CheXpert_Full.IN_CHANNELS
             ),
         ]
+
+
+if __name__ == '__main__':
+    dataset = CheXpert_Full('/home/dvd/data/datasets', train=True)
+    dataset.to_qa()
+    dataset = CheXpert_Full('/home/dvd/data/datasets', train=False)
+    dataset.to_qa()

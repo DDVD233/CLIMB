@@ -16,6 +16,7 @@ from tqdm import tqdm
 
 from src.datasets.specs import Input2dSpec
 from src.utils import count_files
+from src.datasets.physionet import PhysioNetDownloader
 
 CHEXPERT_LABELS = {
     'No Finding': 0,
@@ -85,10 +86,16 @@ class VINDR_CXR(VisionDataset):
     PATCH_SIZE = (16, 16)
     IN_CHANNELS = 1
 
-    def __init__(self, base_root: str, download: bool = False, train: bool = True) -> None:
+    def __init__(self, base_root: str, download: bool = False, train: bool = True, file_list = None) -> None:
         self.root = os.path.join(base_root, 'chest_xray', 'vindr')
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         super().__init__(self.root)
+        if download:
+            if file_list is not None:
+                self.file_set = set(file_list)
+            else:
+                self.file_set = None
+            self.download()
         self.index_location = self.find_data()
         self.split = 'train' if train else 'test'
         self.build_index()
@@ -294,3 +301,67 @@ class VINDR_CXR(VisionDataset):
         return [
             Input2dSpec(input_size=VINDR_CXR.INPUT_SIZE, patch_size=VINDR_CXR.PATCH_SIZE, in_channels=VINDR_CXR.IN_CHANNELS),
         ]
+
+    def download(self):
+        # Initialize the downloader
+        downloader = PhysioNetDownloader("https://physionet.org/files/vindr-cxr/1.0.0/")
+
+        required_files = [
+            "LICENSE.txt",
+            "SHA256SUMS.txt",
+            "annotations/annotations_test.csv",
+            "annotations/annotations_train.csv",
+            "annotations/image_labels_test.csv",
+            "annotations/image_labels_train.csv",
+            "supplemental_file_DICOM_tags.pdf"
+        ]
+
+        for file in required_files:
+            remote_path = file
+            local_path = os.path.join(self.root, file)
+            
+            if not os.path.exists(local_path):
+                print(f"Downloading {file}...")
+                success = downloader.download_file(remote_path, local_path)
+                if not success:
+                    raise RuntimeError(f"Failed to download {file}")
+
+        
+        metadata_train = pd.read_csv(os.path.join(self.root, required_files[3]))
+        metadata_test = pd.read_csv(os.path.join(self.root, required_files[2]))
+
+        required_files = []
+
+        for i in range(len(metadata_train['image_id'])):
+            file_name = str(metadata_train['image_id'][i])
+            if self.file_set is None or file_name in self.file_set or 'train' in self.file_set:
+                required_files.append(os.path.join('train', file_name + '.dicom'))
+
+        for i in range(len(metadata_test['image_id'])):
+            file_name = str(metadata_test['image_id'][i])
+            if self.file_set is None or file_name in self.file_set or 'test' in self.file_set:
+                required_files.append(os.path.join('test', file_name + '.dicom'))
+
+
+        for file in required_files:
+            remote_path = file
+            local_path = os.path.join(self.root, file)
+            
+            if not os.path.exists(local_path):
+                print(f"Downloading {file}...")
+                success = downloader.download_file(remote_path, local_path)
+                if not success:
+                    raise RuntimeError(f"Failed to download {file}")
+
+        print("Download completed successfully!")
+
+
+
+if __name__ == "__main__":
+    d = VINDR_CXR(download=True, base_root='data', file_list=['000d68e42b71d3eac10ccc077aba07c1',
+                                               '008b3176a7248a0a189b5731ac8d2e95',
+                                               '0386d9b8234215dc50eb1f66eb206d85',
+                                               '004f33259ee4aef671c2b95d54e4be68'])
+
+
+

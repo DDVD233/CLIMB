@@ -5,6 +5,10 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from torch.utils.data import Dataset
 
+import subprocess
+import gdown
+import zipfile
+
 
 class COVIDUS(Dataset):
     '''A dataset class for the COVID-US dataset'''
@@ -12,6 +16,9 @@ class COVIDUS(Dataset):
     def __init__(self, base_root: str, download: bool = False, train: bool = True) -> None:
         self.root = os.path.join(base_root, 'ultrasound', 'covid_us')
         super().__init__()
+        if download:
+            self.download()
+            
         self.index_location = self.find_data()
         self.split: str = 'train' if train else 'valid'
         self.train = train
@@ -154,3 +161,29 @@ class COVIDUS(Dataset):
 
     def __len__(self) -> int:
         return len(self.file_names)
+
+    def download(self):
+        os.makedirs(self.root, exist_ok=True)
+        file_id = "16HCezNef_bIyyHOgHqovkOYytpd4uPBM"
+        gdown.download(f"https://drive.google.com/uc?id={file_id}",
+                       os.path.join(self.root, "videos.zip"), quiet=False)
+        with zipfile.ZipFile(os.path.join(self.root, "videos.zip"), "r") as zip_ref:
+            zip_ref.extractall(self.root)
+        annotation_ids = [("1s5tNVfcelKzF1NAJsnsJFMGlHMPxs9Qx", "annotation_train.jsonl"),
+                          ("1oURVCLwHPRcFhyo8r7HXljwMcxXS_rXY", "annotation_valid.jsonl"),
+                          ("1iXZspjTZr6PySMYWh-4gVn_8l-PpXZMu", "llava_med_test_results_finetuned1.jsonl"),
+                          ("1NwHYQ-LfSV-v6PCvRLoUQOheLxAeQ4zB", "llava_med_test_results.jsonl")
+                         ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
+            
+        #repo_url = "https://github.com/nrc-cnrc/COVID-US.git"
+        #subprocess.run(["git", "clone", repo_url, self.root])
+        print("Successfully downloaded dataset")
+        
+        
+
+if __name__ == "__main__":
+    d = COVIDUS(download=True, base_root='data')
+    

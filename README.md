@@ -13,7 +13,19 @@ CLIMB comprises:
 - 96 different clinical conditions
 - 13 clinical domains
 
-A list of the datasets included in CLIMB can be found in the `Dataset_Info.md` file.
+A list of the datasets included in CLIMB can be found in the `Dataset_Info.md` file. 
+
+# How to download:
+## Downloading entire dataset
+Create an object of the corresponding dataset class. An example is shown below.
+```
+d = BinaryBrainTumorDataset(base_root='data', download=True)
+```
+If we run this code from the root directory, the dataset will be downloaded to the 'data' directory.
+Each dataset will be in its own directory, and the dataset directories are categorized by modality.
+For example, Brain Tumor 2 will be downloaded to `data/mri/brain_tumor_2`.
+
+To see other ways to download the dataset, please refer to the `DOWNLOADER.md` file.
 
 ### Data Distribution
 

@@ -10,6 +10,7 @@ from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
 
 from src.datasets.specs import Input2dSpec
+from src.datasets.kaggle import KaggleDownloader
 
 COVID19_LABELS = {
     'Normal': 0,
@@ -28,7 +29,7 @@ class CoronaHackDataset(VisionDataset):
     PATCH_SIZE = (16, 16)
     IN_CHANNELS = 1
 
-    def __init__(self, base_root: str, train: bool = True) -> None:
+    def __init__(self, base_root: str, download: bool = False, train: bool = True) -> None:
         """
         Args:
             base_root: Root directory of the dataset
@@ -36,6 +37,8 @@ class CoronaHackDataset(VisionDataset):
         """
         self.root = os.path.join(base_root, 'chest_xray', 'coronahack')
         super().__init__(self.root)
+        if download:
+            self.download()
 
         self.split = 'train' if train else 'test'
         self.classes = list(COVID19_LABELS.keys())
@@ -181,3 +184,14 @@ class CoronaHackDataset(VisionDataset):
                 in_channels=CoronaHackDataset.IN_CHANNELS
             ),
         ]
+
+    def download(self):
+        downloader = KaggleDownloader("praveengovi/coronahack-chest-xraydataset")
+        downloader.download_file(self.root)
+        
+        
+
+
+
+if __name__ == "__main__":
+    d = CoronaHackDataset(download=True, base_root='data')

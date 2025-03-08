@@ -9,6 +9,7 @@ from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
 
 from src.datasets.specs import Input2dSpec
+from src.datasets.kaggle import KaggleDownloader
 
 BRAIN_TUMOR_LABELS = {
     'no_tumor': 0,
@@ -27,7 +28,7 @@ class BrainTumorDataset(VisionDataset):
     PATCH_SIZE = (16, 16)
     IN_CHANNELS = 3  # MRI images are typically saved as RGB
 
-    def __init__(self, base_root: str, train: bool = True) -> None:
+    def __init__(self, base_root: str, download: bool = True, train: bool = True) -> None:
         """
         Args:
             base_root: Root directory of the dataset
@@ -35,6 +36,9 @@ class BrainTumorDataset(VisionDataset):
         """
         self.root = os.path.join(base_root, 'mri', 'brain_tumor')
         super().__init__(self.root)
+
+        if download:
+            self.download()
 
         self.split = 'train' if train else 'test'
         self.classes = list(BRAIN_TUMOR_LABELS.keys())
@@ -152,3 +156,14 @@ class BrainTumorDataset(VisionDataset):
         unique, counts = np.unique(self.labels, return_counts=True)
         distribution = dict(zip([self.classes[i] for i in unique], counts))
         return distribution
+
+    def download(self):
+        downloader = KaggleDownloader("sartajbhuvaji/brain-tumor-classification-mri")
+        downloader.download_file(self.root)
+        
+        
+
+
+
+if __name__ == "__main__":
+    d = BrainTumorDataset(download=True, base_root='data')

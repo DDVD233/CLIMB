@@ -11,6 +11,7 @@ from torchvision import transforms
 
 from src.datasets.specs import Input2dSpec
 from src.utils import count_files, get_pixel_array, LABEL_FRACS
+from src.datasets.physionet import PhysioNetDownloader
 
 
 class VINDR(Dataset):
@@ -28,9 +29,16 @@ class VINDR(Dataset):
     IN_CHANNELS = 1
     RANDOM_SEED = 0
 
-    def __init__(self, base_root: str, download: bool = False, train: bool = True, finetune_size: str = None) -> None:
+    def __init__(self, base_root: str, download: bool = False, train: bool = True, finetune_size: str = None, file_list = None) -> None:
         super().__init__()
         self.root = os.path.join(base_root, 'mammo', 'vindr')
+        if download:
+            if file_list is not None:
+                self.file_set = set(file_list)
+            else:
+                self.file_set = None
+            self.download()
+        
         self.split = 'train' if train else 'test'
         self.finetune_size = 0 if finetune_size is None else LABEL_FRACS[finetune_size]
         if not os.path.isdir(self.root):
@@ -153,3 +161,54 @@ class VINDR(Dataset):
         return [
             Input2dSpec(input_size=VINDR.INPUT_SIZE, patch_size=VINDR.PATCH_SIZE, in_channels=VINDR.IN_CHANNELS),
         ]
+
+    def download(self):
+        downloader = PhysioNetDownloader("https://www.physionet.org/files/vindr-mammo/1.0.0/")
+
+        required_files = [
+            "LICENSE.txt",
+            "SHA256SUMS.txt",
+            "breast-level_annotations.csv",
+            "finding_annotations.csv",
+            "metadata.csv"
+        ]
+
+        for file in required_files:
+            remote_path = file
+            local_path = os.path.join(self.root, file)
+            
+            if not os.path.exists(local_path):
+                print(f"Downloading {file}...")
+                success = downloader.download_file(remote_path, local_path)
+                if not success:
+                    raise RuntimeError(f"Failed to download {file}")
+
+        metadata = pd.read_csv(os.path.join(self.root, required_files[3]))
+
+        required_files = []
+
+        for i in range(len(metadata['study_id'])):
+            study_id = str(metadata['study_id'][i])
+            image_id = str(metadata['image_id'][i])
+            if self.file_set is None or study_id in self.file_set or image_id in self.file_set or 'images' in self.file_set:
+                required_files.append(os.path.join('images', study_id, image_id) + '.dicom')
+
+        for file in required_files:
+            remote_path = file
+            local_path = os.path.join(self.root, file)
+            
+            if not os.path.exists(local_path):
+                print(f"Downloading {file}...")
+                success = downloader.download_file(remote_path, local_path)
+                if not success:
+                    raise RuntimeError(f"Failed to download {file}")
+
+        print("Download completed successfully!")
+
+
+
+if __name__ == "__main__":
+    d = VINDR(download=True, base_root='data', file_list=['0025a5dc99fd5c742026f0b2b030d3e9',
+                                                '16e58fc1d65fa7587247e6224ee96527',
+                                                '7fc1f1bb8bb1a7efaf7104e49c4d8b86'])
+

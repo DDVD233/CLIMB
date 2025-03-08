@@ -2,6 +2,8 @@ import getpass
 import json
 import os
 import subprocess
+import gzip
+import shutil
 
 import numpy as np
 import pandas as pd
@@ -17,6 +19,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from urllib.parse import urljoin
 
 from src.datasets.specs import Input2dSpec
+
+from src.datasets.physionet import PhysioNetDownloader
 
 
 def any_exist(files):
@@ -40,7 +44,7 @@ CHEXPERT_LABELS = {
     'Support Devices': 13,
 }
 
-
+'''
 class PhysioNetDownloader:
     """Handles authentication and downloading of files from PhysioNet using wget"""
 
@@ -65,7 +69,7 @@ class PhysioNetDownloader:
                 f.write(f"{self.username}\n{self.password}")
             os.chmod(self.credentials_file, 0o600)  # Secure the credentials file
 
-    def download_file(self, remote_path, local_path):
+    def download_file(self, remote_path, local_path): #, is_folder=False):
         """Download a single file from PhysioNet using wget"""
         # Ensure the directory exists
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
@@ -84,6 +88,19 @@ class PhysioNetDownloader:
             '-O', local_path,  # Output to specific file
             url
         ]
+
+        #if is_folder:
+        #    wget_command = [
+        #        'wget',
+        #        '-r',  # Recursive download
+        #        '-N',  # Only download if newer
+        #        '-c',  # Continue partially downloaded files
+        #        '--no-check-certificate',  # Skip certificate validation
+        #        '--user', self.username,
+        #        '--password', self.password,
+        #        '-P', local_path,  # Output to specific file
+        #        url
+        #    ]
 
         try:
             # Run wget command
@@ -104,6 +121,10 @@ class PhysioNetDownloader:
             print(f"Error running wget: {str(e)}")
             return False
 
+    #def download_folder(self, remote_path, local_path):
+'''
+        
+
 
 class MIMIC_CXR(VisionDataset):
     '''A dataset class for the MIMIC-CXR dataset (https://physionet.org/content/mimic-cxr/2.0.0/).
@@ -118,9 +139,15 @@ class MIMIC_CXR(VisionDataset):
     PATCH_SIZE = (16, 16)
     IN_CHANNELS = 1
 
-    def __init__(self, base_root: str, download: bool = True, train: bool = True, finetune_size: str = None):
+    def __init__(self, base_root: str, download: bool = True, train: bool = True, finetune_size: str = None, file_list=None):
         self.root = os.path.join(base_root, 'chest_xray', 'mimic-cxr')
         super().__init__(self.root)
+        if download:
+            if file_list is not None:
+                self.file_set = set(file_list)
+            else:
+                self.file_set = None
+            self.download()
         self.index_location = self.find_data()
         self.split = ['train'] if train else ['test', 'validate']
         self.finetune_size = 0 if finetune_size is None else self.LABEL_FRACS[finetune_size]
@@ -149,6 +176,11 @@ class MIMIC_CXR(VisionDataset):
                 'Note cxr-study-list.csv.gz is from https://physionet.org/content/mimic-cxr/2.0.0/
                 """
             )
+
+    def download(self):
+        # download files to self.root
+        pass
+
 
     def build_index(self):
         print('Building index...')
@@ -281,3 +313,100 @@ class MIMIC_CXR(VisionDataset):
         return [
             Input2dSpec(input_size=MIMIC_CXR.INPUT_SIZE, patch_size=MIMIC_CXR.PATCH_SIZE, in_channels=MIMIC_CXR.IN_CHANNELS),
         ]
+
+    def download(self):
+        """
+        Downloads and extracts the MIMIC-CXR dataset if it is not present.
+        """
+        # Initialize the downloader
+        downloader = PhysioNetDownloader("https://physionet.org/files/mimic-cxr-jpg/2.0.0/")
+
+        # List of essential files required for dataset processing
+        required_files = [
+            "mimic-cxr-2.0.0-chexpert.csv.gz",
+            "mimic-cxr-2.0.0-metadata.csv.gz",
+            "mimic-cxr-2.0.0-negbio.csv.gz",
+            "mimic-cxr-2.0.0-split.csv.gz",
+            "LICENSE.txt",
+            "README",
+            "SHA256SUMS.txt"
+        ]
+
+        # Image data directory (needs to be downloaded manually or automated)
+        image_dir = os.path.join(self.root, "files")
+        os.makedirs(image_dir, exist_ok=True)
+
+        # Download metadata files
+        for file in required_files:
+            remote_path = file
+            local_path = os.path.join(self.root, file)
+            
+            if not os.path.exists(local_path):
+                print(f"Downloading {file}...")
+                success = downloader.download_file(remote_path, local_path)
+                if not success:
+                    raise RuntimeError(f"Failed to download {file}")
+
+        # Extract the CSV files if needed
+        for file in required_files[0:4]:
+            file_path = os.path.join(self.root, file)
+            extracted_path = file_path.replace(".gz", "")
+            if not os.path.exists(extracted_path):
+                print(f"Extracting {file}...")
+                with gzip.open(file_path, 'rb') as f_in:
+                    with open(extracted_path, 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+
+        image_files = []
+        metadata = pd.read_csv(os.path.join(self.root, "mimic-cxr-2.0.0-metadata.csv"))
+
+        for i in range(len(metadata['dicom_id'])):
+            dicom_id = metadata['dicom_id'][i]
+            subj_id = metadata['subject_id'][i]
+            study_id = metadata['study_id'][i]
+            study_dir = 's' + str(study_id)
+            subj_dir = 'p' + str(subj_id)
+            if (self.file_set is None or study_dir in self.file_set
+                                    or subj_dir in self.file_set
+                                    or subj_dir[0:3] in self.file_set
+                                    or "files" in self.file_set
+                                    or str(dicom_id) in self.file_set):
+                image_files.append(os.path.join(subj_dir[0:3], subj_dir, study_dir, str(dicom_id) + '.jpg'))
+
+        #print(image_files)
+
+        # Download image files
+        for file in image_files:
+            remote_path = os.path.join("files", file)
+            local_path = os.path.join(image_dir, file)
+            
+            if not os.path.exists(local_path):
+                print(f"Downloading {file}...")
+                success = downloader.download_file(remote_path, local_path)
+                if not success:
+                    raise RuntimeError(f"Failed to download {file}")
+
+
+
+
+
+
+
+        
+
+        #images_folder = "p10/p10000032/"
+
+        # Download the image dataset
+        #if not os.path.exists(os.path.join(image_dir, images_folder)):  # Check if at least one image subdir exists
+        #    print("Downloading chest X-ray images...")
+        #    #success = downloader.download_file("files/", image_dir)
+        #    success = downloader.download_file(os.path.join("files/", images_folder),
+        #                                       os.path.join(image_dir, images_folder), is_folder=True)
+        #    if not success:
+        #        raise RuntimeError("Failed to download chest X-ray images")
+
+        print("Download and extraction completed successfully!")
+
+
+if __name__ == "__main__":
+    d = MIMIC_CXR(base_root='data', file_list=['p10000032', 'p10000764', 's50771383', '8e338050-c72628f4-cf19ef85-cb13d287-5af57beb'])

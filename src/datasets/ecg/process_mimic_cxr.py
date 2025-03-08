@@ -123,8 +123,8 @@ def main():
     Main function to demonstrate usage of the converter.
     """
     # Example usage
-    input_dir = "<file_path>"
-    output_dir = "<file_path>"
+    input_dir = "/home/dvd/high_modality/ecg/mimiciv/files"
+    output_dir = "/home/dvd/high_modality/ecg/mimiciv/mats"
 
     print("Starting batch conversion...")
     batch_process_directory(input_dir, output_dir)

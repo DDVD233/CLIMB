@@ -4,6 +4,8 @@ from typing import Any, List, Optional
 import pandas as pd
 from torch.utils.data import Dataset
 
+import subprocess
+
 
 class COVIDBLUES(Dataset):
     '''A dataset class for the COVID Bluepoint Lung Ultrasound (BLUES) dataset'''
@@ -11,6 +13,9 @@ class COVIDBLUES(Dataset):
     def __init__(self, base_root: str, download: bool = False, train: bool = True) -> None:
         self.root = os.path.join(base_root, 'ultrasound', 'COVID-BLUES')
         super().__init__()
+        if download:
+            self.download()
+        
         self.index_location = self.find_data()
         self.split: str = 'train' if train else 'valid'
         self.train = train
@@ -151,3 +156,13 @@ class COVIDBLUES(Dataset):
 
     def __len__(self) -> int:
         return len(self.file_names)
+
+    def download(self):
+        repo_url = "https://github.com/NinaWie/COVID-BLUES.git"
+        subprocess.run(["git", "clone", repo_url, self.root])
+        print("Successfully downloaded dataset")
+        
+        
+
+if __name__ == "__main__":
+    d = COVIDBLUES(download=True, base_root='data')

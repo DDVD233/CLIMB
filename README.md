@@ -6,6 +6,10 @@ This dataset framework is built on top of the [BenchMD](https://github.com/rajpu
 
 We also built a downloader framework so that you can download datasets with gated access easily. The downloader framework currently supports all datasets on PhysioNet, Github and Kaggle, with more to come.
 
+![Sunburst Distribution](imgs/intro_figs.png)
+
+![Pipeline](imgs/CLIMB_Data_Pipeline.jpg)
+
 ## Dataset Overview
 
 CLIMB comprises:

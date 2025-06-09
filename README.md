@@ -21,7 +21,15 @@ CLIMB comprises:
 
 A list of the datasets included in CLIMB can be found in the [Dataset Info](Dataset_Info.md). 
 
-# How to download:
+# How to download
+
+## Installing dependencies
+
+As the first step, please install the required dependencies via
+```
+pip install -r requirements.txt
+```
+
 ## Downloading entire dataset
 Create an object of the corresponding dataset class. An example is shown below.
 ```

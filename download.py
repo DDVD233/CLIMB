@@ -38,6 +38,9 @@ from src.datasets.ultrasound.covid_blue import COVIDBLUES
 from src.datasets.ultrasound.covid_us import COVIDUS
 from src.datasets.derm.HAM10000 import HAM10000
 from src.datasets.derm.pad_ufes_20 import pad_ufes_20
+from src.datasets.derm.isic2020 import ISIC2020
+from src.datasets.ct.hemorrhage import BrainCTHemorrhageDataset
+from src.datasets.ct.rspect import Rspect
 
 # Dataset registry with display names and classes
 DOWNLOADABLE_DATASETS = {
@@ -88,7 +91,19 @@ DOWNLOADABLE_DATASETS = {
     'pad_ufes_20': {
         'name': 'PAD UFES 20',
         'class': pad_ufes_20,
-    }
+    },
+    'isic2020': {
+        'name': 'ISIC 2020',
+        'class': ISIC2020,
+    },
+    'brain_ct_hemorrhage': {
+        'name': 'Brain CT Hemorrhage',
+        'class': BrainCTHemorrhageDataset,
+    },
+    'rspect': {
+        'name': 'RSPECT',
+        'class': Rspect,
+    },
 }
 
 

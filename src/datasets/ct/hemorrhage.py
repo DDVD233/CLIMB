@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from typing import Any
 
 import numpy as np
@@ -9,6 +10,9 @@ from PIL import Image
 from sklearn.model_selection import train_test_split
 from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
+from src.datasets.kaggle import KaggleDownloader
+import gdown
+from pathlib import Path
 
 from src.datasets.specs import Input2dSpec
 
@@ -28,7 +32,7 @@ class BrainCTHemorrhageDataset(VisionDataset):
     PATCH_SIZE = (16, 16)
     IN_CHANNELS = 1  # CT scans are grayscale
 
-    def __init__(self, base_root: str, train: bool = True, test_size: float = 0.2,
+    def __init__(self, base_root: str, download: bool = False, train: bool = True, test_size: float = 0.2,
                  random_state: int = 42) -> None:
         """
         Args:
@@ -39,6 +43,9 @@ class BrainCTHemorrhageDataset(VisionDataset):
         """
         self.root = os.path.join(base_root, 'ct', 'hemorrhage')
         super().__init__(self.root)
+
+        if download:
+            self.download()
 
         self.split = 'train' if train else 'test'
         self.classes = list(HEMORRHAGE_LABELS.keys())
@@ -202,3 +209,20 @@ class BrainCTHemorrhageDataset(VisionDataset):
         unique, counts = np.unique(self.patient_nums, return_counts=True)
         distribution = dict(zip(unique, counts))
         return distribution
+
+    def download(self):
+        downloader = KaggleDownloader("vbookshelf/computed-tomography-ct-images")
+        parent_folder = Path(self.root).parent.absolute()
+        downloader.download_file(parent_folder)
+        if os.path.exists(os.path.join(self.root)):
+            shutil.rmtree(os.path.join(self.root))
+        os.rename(os.path.join(parent_folder, 'computed-tomography-images-for-intracranial-hemorrhage-detection-and-segmentation-1.0.0'),
+                  os.path.join(self.root))
+        annotation_ids = [("1obDlODyZDjPj0HubXuzXGV__66ZE1CdT", "annotation_train.jsonl"),
+                          ("1OhJRAvSGSVCWZtV8DVJzzwZ3iRYFpTm0", "annotation_valid.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(os.path.join(self.root), a_name), quiet=False)
+
+        print("Successfully downloaded Hemorrhage dataset")

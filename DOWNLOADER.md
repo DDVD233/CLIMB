@@ -10,7 +10,27 @@
 - COVID BLUES (COVIDBLUES in src.datasets.ultrasound.covid_blue)
 - COVID US (COVIDUS in src.datasets.ultrasound.covid_us)
 # How to download:
-## Downloading entire dataset
+
+## Global Downloader (Recommended)
+Use the `download.py` script to download multiple datasets at once:
+
+```bash
+# Download all supported datasets
+python download.py /path/to/datasets
+
+# Download specific datasets
+python download.py /path/to/datasets --datasets mimic_cxr vindr_cxr busi
+
+# Continue downloading even if some datasets fail
+python download.py /path/to/datasets --continue-on-error
+
+# Show help and list of available datasets
+python download.py --help
+```
+
+The global downloader will download datasets to organized subdirectories (e.g., `/path/to/datasets/chest_xray/mimic_cxr`)
+
+## Downloading individual datasets
 Create an object of the corresponding dataset class. An example is shown below.
 ```
 d = BinaryBrainTumorDataset(base_root='data', download=True)

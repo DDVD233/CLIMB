@@ -177,10 +177,6 @@ class MIMIC_CXR(VisionDataset):
                 """
             )
 
-    def download(self):
-        # download files to self.root
-        pass
-
 
     def build_index(self):
         print('Building index...')

@@ -18,7 +18,7 @@ class COVIDUS(Dataset):
         super().__init__()
         if download:
             self.download()
-            
+
         self.index_location = self.find_data()
         self.split: str = 'train' if train else 'valid'
         self.train = train
@@ -173,17 +173,15 @@ class COVIDUS(Dataset):
                           ("1oURVCLwHPRcFhyo8r7HXljwMcxXS_rXY", "annotation_valid.jsonl"),
                           ("1iXZspjTZr6PySMYWh-4gVn_8l-PpXZMu", "llava_med_test_results_finetuned1.jsonl"),
                           ("1NwHYQ-LfSV-v6PCvRLoUQOheLxAeQ4zB", "llava_med_test_results.jsonl")
-                         ]
+                          ]
         for a_id, a_name in annotation_ids:
             gdown.download(f"https://drive.google.com/uc?id={a_id}",
                            os.path.join(self.root, a_name), quiet=False)
-            
-        #repo_url = "https://github.com/nrc-cnrc/COVID-US.git"
-        #subprocess.run(["git", "clone", repo_url, self.root])
+
+        # repo_url = "https://github.com/nrc-cnrc/COVID-US.git"
+        # subprocess.run(["git", "clone", repo_url, self.root])
         print("Successfully downloaded dataset")
-        
-        
+
 
 if __name__ == "__main__":
     d = COVIDUS(download=True, base_root='data')
-    

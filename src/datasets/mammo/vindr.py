@@ -8,6 +8,7 @@ import tqdm
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
+import gdown
 
 from src.datasets.specs import Input2dSpec
 from src.utils import count_files, get_pixel_array, LABEL_FRACS
@@ -173,7 +174,7 @@ class VINDR(Dataset):
             "metadata.csv"
         ]
 
-        for file in required_files:
+        for file in tqdm.tqdm(required_files, desc="Downloading required files for VINDR MAMMO dataset"):
             remote_path = file
             local_path = os.path.join(self.root, file)
             
@@ -193,7 +194,7 @@ class VINDR(Dataset):
             if self.file_set is None or study_id in self.file_set or image_id in self.file_set or 'images' in self.file_set:
                 required_files.append(os.path.join('images', study_id, image_id) + '.dicom')
 
-        for file in required_files:
+        for file in tqdm.tqdm(required_files, desc="Downloading images for VINDR MAMMO dataset"):
             remote_path = file
             local_path = os.path.join(self.root, file)
             
@@ -202,6 +203,13 @@ class VINDR(Dataset):
                 success = downloader.download_file(remote_path, local_path)
                 if not success:
                     raise RuntimeError(f"Failed to download {file}")
+
+        annotation_ids = [("192PdoNhQGDyx5hunJAQ9kScq1pfSXBTc", "annotation_train.jsonl"),
+                          ("1qahqvU9Oz3RyNF4hpBk4c4WQF__d9UEb", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print("Download completed successfully!")
 

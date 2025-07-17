@@ -13,6 +13,7 @@ from PIL import Image
 from torchvision import transforms
 from torchvision.datasets.vision import VisionDataset
 from tqdm import tqdm
+import gdown
 
 from src.datasets.specs import Input2dSpec
 from src.utils import count_files
@@ -352,6 +353,13 @@ class VINDR_CXR(VisionDataset):
                 success = downloader.download_file(remote_path, local_path)
                 if not success:
                     raise RuntimeError(f"Failed to download {file}")
+
+        annotation_ids = [("1KLTMgqhmdLQXOympTssPPnMLiZxhK_DE", "annotation_train.jsonl"),
+                          ("1OWIyWTVfwLQuuTjfNyp36jKRuJlxZmif", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print("Download completed successfully!")
 

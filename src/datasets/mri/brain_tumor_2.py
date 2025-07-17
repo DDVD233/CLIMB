@@ -10,11 +10,13 @@ from torchvision.datasets.vision import VisionDataset
 
 from src.datasets.specs import Input2dSpec
 from src.datasets.kaggle import KaggleDownloader
+import gdown
 
 BRAIN_TUMOR_LABELS = {
     'no': 0,
     'yes': 1,
 }
+
 
 class BinaryBrainTumorDataset(VisionDataset):
     """Dataset class for binary brain tumor classification
@@ -48,7 +50,7 @@ class BinaryBrainTumorDataset(VisionDataset):
             transforms.Resize(self.INPUT_SIZE),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],  # ImageNet normalization
-                              std=[0.229, 0.224, 0.225])
+                                 std=[0.229, 0.224, 0.225])
         ])
 
     def build_index(self):
@@ -126,7 +128,7 @@ class BinaryBrainTumorDataset(VisionDataset):
 
             # Create diagnosis question
             diagnosis_question = ('Is there a tumor present in this brain MRI scan? '
-                                'Answer with one of the following:\n')
+                                  'Answer with one of the following:\n')
             choices_str = 'No Tumor\nHas Tumor'
             diagnosis_question += choices_str
 
@@ -176,9 +178,14 @@ class BinaryBrainTumorDataset(VisionDataset):
     def download(self):
         downloader = KaggleDownloader("jjprotube/brain-mri-images-for-brain-tumor-detection")
         downloader.download_file(self.root)
-        
-        
+        annotation_ids = [("1wVbgJW0RMuibUq_d9xA4PPDD6-z84myv", "annotation_train.jsonl"),
+                          ("1wKyF7GeszLkokf1Is7C7Gh6kMIoO16Ec", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
+        print("Successfully downloaded Brain Tumor 2 dataset")
 
 
 if __name__ == "__main__":
@@ -188,4 +195,3 @@ if __name__ == "__main__":
 
 
 
-        

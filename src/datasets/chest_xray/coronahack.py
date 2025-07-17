@@ -11,6 +11,7 @@ from torchvision.datasets.vision import VisionDataset
 
 from src.datasets.specs import Input2dSpec
 from src.datasets.kaggle import KaggleDownloader
+import gdown
 
 COVID19_LABELS = {
     'Normal': 0,
@@ -188,9 +189,14 @@ class CoronaHackDataset(VisionDataset):
     def download(self):
         downloader = KaggleDownloader("praveengovi/coronahack-chest-xraydataset")
         downloader.download_file(self.root)
-        
-        
+        annotation_ids = [("1KWbIP1poVSRfSs7cPK0EYnmW134T9Pxi", "annotation_train.jsonl"),
+                          ("1tuZUoLCyFy73M-UY2lXBjMEh5nK2ui3r", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
+        print("Successfully downloaded CoronaHack dataset")
 
 
 if __name__ == "__main__":

@@ -43,22 +43,22 @@ DOWNLOADABLE_DATASETS = {
     #     'name': 'MIMIC CXR',
     #     'class': MIMIC_CXR,
     # },
-    'vindr_cxr': {
-        'name': 'VINDR CXR',
-        'class': VINDR_CXR,
-    },
-    'vindr_mammo': {
-        'name': 'VINDR MAMMO',
-        'class': VINDR,
-    },
-    'busi': {
-        'name': 'BUSI',
-        'class': BUSI,
-    },
-    'covid19': {
-        'name': 'COVID19',
-        'class': Covid19Dataset,
-    },
+    # 'vindr_cxr': {
+    #     'name': 'VINDR CXR',
+    #     'class': VINDR_CXR,
+    # },
+    # 'vindr_mammo': {
+    #     'name': 'VINDR MAMMO',
+    #     'class': VINDR,
+    # },
+    # 'busi': {
+    #     'name': 'BUSI',
+    #     'class': BUSI,
+    # },
+    # 'covid19': {
+    #     'name': 'COVID19',
+    #     'class': Covid19Dataset,
+    # },
     'brain_tumor': {
         'name': 'Brain Tumor',
         'class': BrainTumorDataset,

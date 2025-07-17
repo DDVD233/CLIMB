@@ -5,6 +5,8 @@ import pandas as pd
 from torch.utils.data import Dataset
 
 import subprocess
+import gdown
+import zipfile
 
 
 class COVIDBLUES(Dataset):
@@ -15,7 +17,7 @@ class COVIDBLUES(Dataset):
         super().__init__()
         if download:
             self.download()
-        
+
         self.index_location = self.find_data()
         self.split: str = 'train' if train else 'valid'
         self.train = train
@@ -160,9 +162,16 @@ class COVIDBLUES(Dataset):
     def download(self):
         repo_url = "https://github.com/NinaWie/COVID-BLUES.git"
         subprocess.run(["git", "clone", repo_url, self.root])
+        annotation_ids = [("1-BphivsAXCY69EQC8EVEje66_qRCOHob", "annotation_train.jsonl"),
+                          ("1LESKYHEPOpaR60WZzIVqJKp7PjtH8BCB", "annotation_valid.jsonl"),
+                          ("1onN3o-04oHuP-c57jieduXN_0moeN8yW", "annotation_age_train.jsonl"),
+                          ("19OIKqpdjOwfKIzpKvHh2ot16hKCy60Dy", "annotation_age_valid.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
         print("Successfully downloaded dataset")
-        
-        
+
 
 if __name__ == "__main__":
     d = COVIDBLUES(download=True, base_root='data')

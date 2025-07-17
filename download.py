@@ -36,29 +36,31 @@ from src.datasets.mri.brain_tumor_2 import BinaryBrainTumorDataset
 from src.datasets.chest_xray.coronahack import CoronaHackDataset
 from src.datasets.ultrasound.covid_blue import COVIDBLUES
 from src.datasets.ultrasound.covid_us import COVIDUS
+from src.datasets.derm.HAM10000 import HAM10000
+from src.datasets.derm.pad_ufes_20 import pad_ufes_20
 
 # Dataset registry with display names and classes
 DOWNLOADABLE_DATASETS = {
-    # 'mimic_cxr': {
-    #     'name': 'MIMIC CXR',
-    #     'class': MIMIC_CXR,
-    # },
-    # 'vindr_cxr': {
-    #     'name': 'VINDR CXR',
-    #     'class': VINDR_CXR,
-    # },
-    # 'vindr_mammo': {
-    #     'name': 'VINDR MAMMO',
-    #     'class': VINDR,
-    # },
-    # 'busi': {
-    #     'name': 'BUSI',
-    #     'class': BUSI,
-    # },
-    # 'covid19': {
-    #     'name': 'COVID19',
-    #     'class': Covid19Dataset,
-    # },
+    'mimic_cxr': {
+        'name': 'MIMIC CXR',
+        'class': MIMIC_CXR,
+    },
+    'vindr_cxr': {
+        'name': 'VINDR CXR',
+        'class': VINDR_CXR,
+    },
+    'vindr_mammo': {
+        'name': 'VINDR MAMMO',
+        'class': VINDR,
+    },
+    'busi': {
+        'name': 'BUSI',
+        'class': BUSI,
+    },
+    'covid19': {
+        'name': 'COVID19',
+        'class': Covid19Dataset,
+    },
     'brain_tumor': {
         'name': 'Brain Tumor',
         'class': BrainTumorDataset,
@@ -78,6 +80,14 @@ DOWNLOADABLE_DATASETS = {
     'covid_us': {
         'name': 'COVID US',
         'class': COVIDUS,
+    },
+    'ham10000': {
+        'name': 'HAM10000',
+        'class': HAM10000,
+    },
+    'pad_ufes_20': {
+        'name': 'PAD UFES 20',
+        'class': pad_ufes_20,
     }
 }
 

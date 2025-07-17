@@ -8,6 +8,7 @@ from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import transforms
 from torchvision.datasets.utils import download_and_extract_archive, extract_archive
+import gdown
 
 from src.datasets.specs import Input2dSpec
 
@@ -82,6 +83,13 @@ class HAM10000(Dataset):
             download_root=self.root,
             filename=filename
         )
+
+        annotation_ids = [("19LGZu80eTPrESwTPNLh63wcHUbnq354C", "annotation_train.jsonl"),
+                          ("1YiNNMrd4DjMNYCH3hIyqdNCaTiM9t8sz", "annotation_valid.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print('Done!')
 

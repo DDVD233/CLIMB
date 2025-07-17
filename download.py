@@ -41,64 +41,69 @@ from src.datasets.derm.pad_ufes_20 import pad_ufes_20
 from src.datasets.derm.isic2020 import ISIC2020
 from src.datasets.ct.hemorrhage import BrainCTHemorrhageDataset
 from src.datasets.ct.rspect import Rspect
+from src.datasets.fundus.aptos import Aptos
 
 # Dataset registry with display names and classes
 DOWNLOADABLE_DATASETS = {
-    'mimic_cxr': {
-        'name': 'MIMIC CXR',
-        'class': MIMIC_CXR,
-    },
-    'vindr_cxr': {
-        'name': 'VINDR CXR',
-        'class': VINDR_CXR,
-    },
-    'vindr_mammo': {
-        'name': 'VINDR MAMMO',
-        'class': VINDR,
-    },
-    'busi': {
-        'name': 'BUSI',
-        'class': BUSI,
-    },
-    'covid19': {
-        'name': 'COVID19',
-        'class': Covid19Dataset,
-    },
-    'brain_tumor': {
-        'name': 'Brain Tumor',
-        'class': BrainTumorDataset,
-    },
-    'brain_tumor_2': {
-        'name': 'Brain Tumor 2',
-        'class': BinaryBrainTumorDataset,
-    },
-    'coronahack': {
-        'name': 'CoronaHack',
-        'class': CoronaHackDataset,
-    },
-    'covid_blues': {
-        'name': 'COVID BLUES',
-        'class': COVIDBLUES,
-    },
-    'covid_us': {
-        'name': 'COVID US',
-        'class': COVIDUS,
-    },
-    'ham10000': {
-        'name': 'HAM10000',
-        'class': HAM10000,
-    },
-    'pad_ufes_20': {
-        'name': 'PAD UFES 20',
-        'class': pad_ufes_20,
-    },
-    'isic2020': {
-        'name': 'ISIC 2020',
-        'class': ISIC2020,
-    },
-    'brain_ct_hemorrhage': {
-        'name': 'Brain CT Hemorrhage',
-        'class': BrainCTHemorrhageDataset,
+    # 'mimic_cxr': {
+    #     'name': 'MIMIC CXR',
+    #     'class': MIMIC_CXR,
+    # },
+    # 'vindr_cxr': {
+    #     'name': 'VINDR CXR',
+    #     'class': VINDR_CXR,
+    # },
+    # 'vindr_mammo': {
+    #     'name': 'VINDR MAMMO',
+    #     'class': VINDR,
+    # },
+    # 'busi': {
+    #     'name': 'BUSI',
+    #     'class': BUSI,
+    # },
+    # 'covid19': {
+    #     'name': 'COVID19',
+    #     'class': Covid19Dataset,
+    # },
+    # 'brain_tumor': {
+    #     'name': 'Brain Tumor',
+    #     'class': BrainTumorDataset,
+    # },
+    # 'brain_tumor_2': {
+    #     'name': 'Brain Tumor 2',
+    #     'class': BinaryBrainTumorDataset,
+    # },
+    # 'coronahack': {
+    #     'name': 'CoronaHack',
+    #     'class': CoronaHackDataset,
+    # },
+    # 'covid_blues': {
+    #     'name': 'COVID BLUES',
+    #     'class': COVIDBLUES,
+    # },
+    # 'covid_us': {
+    #     'name': 'COVID US',
+    #     'class': COVIDUS,
+    # },
+    # 'ham10000': {
+    #     'name': 'HAM10000',
+    #     'class': HAM10000,
+    # },
+    # 'pad_ufes_20': {
+    #     'name': 'PAD UFES 20',
+    #     'class': pad_ufes_20,
+    # },
+    # 'isic2020': {
+    #     'name': 'ISIC 2020',
+    #     'class': ISIC2020,
+    # },
+    # 'brain_ct_hemorrhage': {
+    #     'name': 'Brain CT Hemorrhage',
+    #     'class': BrainCTHemorrhageDataset,
+    # },
+    'aptos': {
+        'name': 'APTOS',
+        'class': Aptos,
     },
     'rspect': {
         'name': 'RSPECT',

@@ -90,6 +90,8 @@ class Rspect(VisionDataset):
         """
         self.root = os.path.join(base_root, 'ct', 'rspect')
         super().__init__(self.root)
+        if download:
+            self.download()
 
         self.split = 'train' if train else 'test'
         self.classes = list(RSPECT_LABELS.keys())

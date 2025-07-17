@@ -1,7 +1,5 @@
 import os
 
-from kaggle.api.kaggle_api_extended import KaggleApi
-
 
 def any_exist(files):
     return any(map(os.path.exists, files))
@@ -12,8 +10,19 @@ class KaggleDownloader:
 
     def __init__(self, remote_path):
         self.remote_path = remote_path
-        self.api = KaggleApi()
-        self.api.authenticate()
+        try:
+            from kaggle.api.kaggle_api_extended import KaggleApi
+            self.api = KaggleApi()
+            self.api.authenticate()
+        except IOError: # no kaggle.json found
+            json_path = "~/.kaggle/kaggle.json"
+            json_content = input("Kaggle API key not found. Please go to https://www.kaggle.com/settings,"
+                                 " click \"Create New Token\", and paste the content of kaggle.json here:\n")
+            os.makedirs(os.path.dirname(os.path.expanduser(json_path)), exist_ok=True)
+            with open(os.path.expanduser(json_path), 'w') as f:
+                f.write(json_content)
+            os.chmod(os.path.expanduser(json_path), 0o600)
+            self.__init__(self.remote_path)
 
     def download_file(self, local_path, type='dataset'):
         """Download from kaggle"""
@@ -27,7 +36,8 @@ class KaggleDownloader:
                 self.api.dataset_download_files(self.remote_path, path=download_path, unzip=True)
             elif type == 'competition':
                 self.api.competition_download_files(self.remote_path, path=download_path)
-        except:
+        except Exception as e:
+            print(e)
             webpage = ""
             if type == 'dataset':
                 webpage = "https://www.kaggle.com/datasets/" + self.remote_path

@@ -10,6 +10,10 @@ from torchvision import transforms
 from src.datasets.specs import Input2dSpec
 from src.utils import LABEL_FRACS
 
+from src.datasets.kaggle import KaggleDownloader
+import gdown
+import zipfile
+
 
 class Aptos(Dataset):
     '''A dataset class for the APTOS 2019 Blindness Detection dataset, grading diabetic retinopathy on the Davis Scale
@@ -31,6 +35,8 @@ class Aptos(Dataset):
     def __init__(self, base_root: str, download: bool = False, train: bool = True, finetune_size: str = None) -> None:
         super().__init__()
         self.root = os.path.join(base_root, 'fundus', 'aptos')
+        if download:
+            self.download()
         self.split = 'train' if train else 'valid'
         self.finetune_size = 0 if finetune_size is None else LABEL_FRACS[finetune_size]
         if not os.path.isdir(self.root):
@@ -148,3 +154,21 @@ class Aptos(Dataset):
         return [
             Input2dSpec(input_size=Aptos.INPUT_SIZE, patch_size=Aptos.PATCH_SIZE, in_channels=Aptos.IN_CHANNELS),
         ]
+
+    def download(self):
+        if not os.path.exists(os.path.join(self.root, 'aptos2019-blindness-detection.zip')):
+            downloader = KaggleDownloader("aptos2019-blindness-detection")
+            downloader.download_file(self.root, type="competition")
+        zip_files = [f for f in os.listdir(self.root) if f.endswith('.zip')]
+        for zip_file in zip_files:
+            with zipfile.ZipFile(os.path.join(self.root, zip_file), 'r') as zip_ref:
+                zip_ref.extractall(self.root)
+
+        annotation_ids = [("1G2y9cBvvKlYrYt2I8jgnAobdl8TIS38K", "annotation_train.jsonl"),
+                          ("1qYOw76Aultl9uB5Bzu361OGhrSclqzGS", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(os.path.join(self.root), a_name), quiet=False)
+
+        print("Successfully downloaded Aptos dataset")

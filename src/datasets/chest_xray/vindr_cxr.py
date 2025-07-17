@@ -316,7 +316,7 @@ class VINDR_CXR(VisionDataset):
             "supplemental_file_DICOM_tags.pdf"
         ]
 
-        for file in required_files:
+        for file in tqdm(required_files, desc="Downloading required files for VINDR-CXR"):
             remote_path = file
             local_path = os.path.join(self.root, file)
             
@@ -343,7 +343,7 @@ class VINDR_CXR(VisionDataset):
                 required_files.append(os.path.join('test', file_name + '.dicom'))
 
 
-        for file in required_files:
+        for file in tqdm(required_files, desc="Downloading images for VINDR-CXR"):
             remote_path = file
             local_path = os.path.join(self.root, file)
             

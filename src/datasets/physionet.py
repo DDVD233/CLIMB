@@ -42,7 +42,7 @@ class PhysioNetDownloader:
                 self.username = f.readline().strip()
                 self.password = f.readline().strip()
         else:
-            print("PhysioNet credentials not found. Please enter them now:")
+            print("PhysioNet credentials not found. You may create an account at https://physionet.org/. Please enter them here:")
             self.username = input("Username: ")
             self.password = getpass.getpass("Password: ")
             # Save credentials
@@ -84,6 +84,10 @@ class PhysioNetDownloader:
 
                 if result.returncode == 0:
                     return True
+                elif "403: Forbidden" in result.stderr:
+                    web_page = self.base_url.replace("/files/", "/content/")
+                    input(f"Please visit {web_page} and accept the terms of use to download this dataset."
+                          f" Press Enter to continue after accepting.")
                 else:
                     if attempt < 2:  # Not the last attempt
                         print(f"Attempt {attempt + 1} failed for {url}: {result.stderr}")

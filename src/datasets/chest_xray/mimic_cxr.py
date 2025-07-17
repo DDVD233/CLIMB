@@ -22,6 +22,7 @@ from src.datasets.specs import Input2dSpec
 
 from src.datasets.physionet import PhysioNetDownloader
 import tqdm
+import gdown
 
 
 def any_exist(files):
@@ -382,6 +383,13 @@ class MIMIC_CXR(VisionDataset):
                 success = downloader.download_file(remote_path, local_path)
                 if not success:
                     raise RuntimeError(f"Failed to download {file}")
+
+        annotation_ids = [("1ulMMCG5jUIglLul7hyqO4hs-vkdxapwm", "annotation_train.jsonl"),
+                          ("1qahqvU9Oz3RyNF4hpBk4c4WQF__d9UEb", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print("Download and extraction completed successfully!")
 

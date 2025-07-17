@@ -39,10 +39,10 @@ from src.datasets.ultrasound.covid_us import COVIDUS
 
 # Dataset registry with display names and classes
 DOWNLOADABLE_DATASETS = {
-    'mimic_cxr': {
-        'name': 'MIMIC CXR',
-        'class': MIMIC_CXR,
-    },
+    # 'mimic_cxr': {
+    #     'name': 'MIMIC CXR',
+    #     'class': MIMIC_CXR,
+    # },
     'vindr_cxr': {
         'name': 'VINDR CXR',
         'class': VINDR_CXR,
@@ -95,7 +95,7 @@ def download_dataset(dataset_key, base_dir, args):
     try:
         # Create dataset instance with download=True
         # Pass base_dir directly - each dataset will handle its own subdirectory structure
-        dataset = dataset_class(base_root=base_dir, download=True)
+        _ = dataset_class(base_root=base_dir, download=True)
             
         print(f"✓ Successfully downloaded {dataset_name}")
         

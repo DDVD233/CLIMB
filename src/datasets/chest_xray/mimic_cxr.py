@@ -21,6 +21,7 @@ from urllib.parse import urljoin
 from src.datasets.specs import Input2dSpec
 
 from src.datasets.physionet import PhysioNetDownloader
+import tqdm
 
 
 def any_exist(files):
@@ -372,7 +373,7 @@ class MIMIC_CXR(VisionDataset):
         #print(image_files)
 
         # Download image files
-        for file in image_files:
+        for file in tqdm.tqdm(image_files, desc="Downloading images in MIMIC-CXR dataset"):
             remote_path = os.path.join("files", file)
             local_path = os.path.join(image_dir, file)
             
@@ -381,25 +382,6 @@ class MIMIC_CXR(VisionDataset):
                 success = downloader.download_file(remote_path, local_path)
                 if not success:
                     raise RuntimeError(f"Failed to download {file}")
-
-
-
-
-
-
-
-        
-
-        #images_folder = "p10/p10000032/"
-
-        # Download the image dataset
-        #if not os.path.exists(os.path.join(image_dir, images_folder)):  # Check if at least one image subdir exists
-        #    print("Downloading chest X-ray images...")
-        #    #success = downloader.download_file("files/", image_dir)
-        #    success = downloader.download_file(os.path.join("files/", images_folder),
-        #                                       os.path.join(image_dir, images_folder), is_folder=True)
-        #    if not success:
-        #        raise RuntimeError("Failed to download chest X-ray images")
 
         print("Download and extraction completed successfully!")
 

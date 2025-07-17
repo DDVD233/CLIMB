@@ -95,7 +95,7 @@ def download_dataset(dataset_key, base_dir, args):
     try:
         # Create dataset instance with download=True
         # Pass base_dir directly - each dataset will handle its own subdirectory structure
-        dataset = dataset_class(root=base_dir, download=True)
+        dataset = dataset_class(base_root=base_dir, download=True)
             
         print(f"✓ Successfully downloaded {dataset_name}")
         

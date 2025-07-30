@@ -37,3 +37,5 @@ matplotlib
 pandas
 pillow
 nibabel
+kaggle
+gdown

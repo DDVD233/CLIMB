@@ -10,6 +10,7 @@ from torchvision.datasets.vision import VisionDataset
 
 from src.datasets.specs import Input2dSpec
 from src.datasets.kaggle import KaggleDownloader
+import gdown
 
 BRAIN_TUMOR_LABELS = {
     'no_tumor': 0,
@@ -17,6 +18,7 @@ BRAIN_TUMOR_LABELS = {
     'meningioma_tumor': 2,
     'pituitary_tumor': 3,
 }
+
 
 class BrainTumorDataset(VisionDataset):
     """Dataset class for the Brain Tumor MRI dataset with 4 classes:
@@ -50,7 +52,7 @@ class BrainTumorDataset(VisionDataset):
             transforms.Resize(self.INPUT_SIZE),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],  # ImageNet normalization
-                              std=[0.229, 0.224, 0.225])
+                                 std=[0.229, 0.224, 0.225])
         ])
 
     def build_index(self):
@@ -112,7 +114,7 @@ class BrainTumorDataset(VisionDataset):
 
             # Create diagnosis question
             diagnosis_question = ('What type of tumor, if any, is present in this brain MRI scan? '
-                                'Answer with one of the following:\n')
+                                  'Answer with one of the following:\n')
             choices_str = '\n'.join([name.replace('_', ' ').title() for name in self.classes])
             diagnosis_question += choices_str
 
@@ -160,9 +162,14 @@ class BrainTumorDataset(VisionDataset):
     def download(self):
         downloader = KaggleDownloader("sartajbhuvaji/brain-tumor-classification-mri")
         downloader.download_file(self.root)
-        
-        
+        annotation_ids = [("1vHFqTV35gLlpbtp9u6Yn_9glPXEWg4nk", "annotation_train.jsonl"),
+                          ("1HPdKj1U4JIQiElpK4qL9MiflQdUYnXSd", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
+        print("Successfully downloaded Brain Tumor dataset")
 
 
 if __name__ == "__main__":

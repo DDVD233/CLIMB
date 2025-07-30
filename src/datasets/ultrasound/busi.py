@@ -5,6 +5,9 @@ from typing import Any, List, Optional
 import pandas as pd
 from torch.utils.data import Dataset
 
+from src.datasets.kaggle import KaggleDownloader
+import gdown
+
 
 class BUSI(Dataset):
     '''A dataset class for the Breast Ultrasound Images dataset
@@ -14,10 +17,15 @@ class BUSI(Dataset):
     def __init__(self, base_root: str, download: bool = False, train: bool = True,
                  in_subfolder=True) -> None:
         if in_subfolder:
-            self.root = os.path.join(base_root, 'ultrasound', 'busi')
+            self.root = os.path.join(base_root, 'ultrasound')  # 'busi')
         else:
             self.root = base_root
         super().__init__()
+        if download:
+            self.download()
+
+        self.root = os.path.join(self.root, 'busi')
+
         self.index_location = self.find_data()
         self.split: str = 'train' if train else 'valid'
         self.train = train
@@ -151,3 +159,22 @@ class BUSI(Dataset):
 
     def __len__(self) -> int:
         return self.label.shape[0]
+
+    def download(self):
+        downloader = KaggleDownloader("aryashah2k/breast-ultrasound-images-dataset")
+        downloader.download_file(self.root)
+        if not os.path.exists(os.path.join(self.root, 'busi')):
+            os.rename(os.path.join(self.root, 'Dataset_BUSI_with_GT'),
+                      os.path.join(self.root, 'busi'))
+        annotation_ids = [("1l9ecjEJyMpeJZxsnWEanfWhacAl71FaH", "annotation_train.jsonl"),
+                          ("172Sd2aZGZ4QtJTt0v0UKa8il21vHlHzJ", "annotation_valid.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(os.path.join(self.root, 'busi'), a_name), quiet=False)
+
+        print("Successfully downloaded BUSI dataset")
+
+
+if __name__ == "__main__":
+    d = BUSI(download=True, base_root='data')

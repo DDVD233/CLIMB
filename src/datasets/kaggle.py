@@ -1,80 +1,48 @@
-import getpass
-import json
 import os
-import subprocess
-import gzip
-import shutil
-
-import numpy as np
-import pandas as pd
-import requests
-import torch
-from PIL import Image
-from torchvision import transforms
-from torchvision.datasets.utils import extract_archive
-from torchvision.datasets.vision import VisionDataset
-from tqdm import tqdm
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-from urllib.parse import urljoin
-
-from src.datasets.specs import Input2dSpec
-
-
-
-from kaggle.api.kaggle_api_extended import KaggleApi
 
 
 def any_exist(files):
     return any(map(os.path.exists, files))
 
 
-
 class KaggleDownloader:
     """Handles authentication and downloading of files from Kaggle using KaggleApi"""
 
-    def __init__(self, remote_path): #, base_url):
-        #self.base_url = base_url
+    def __init__(self, remote_path):
         self.remote_path = remote_path
-        self.credentials_file = os.path.expanduser("~/.kaggle/kaggle.json")
-        self._load_or_prompt_credentials()
+        try:
+            from kaggle.api.kaggle_api_extended import KaggleApi
+            self.api = KaggleApi()
+            self.api.authenticate()
+        except IOError: # no kaggle.json found
+            json_path = "~/.kaggle/kaggle.json"
+            json_content = input("Kaggle API key not found. Please go to https://www.kaggle.com/settings,"
+                                 " click \"Create New Token\", and paste the content of kaggle.json here:\n")
+            os.makedirs(os.path.dirname(os.path.expanduser(json_path)), exist_ok=True)
+            with open(os.path.expanduser(json_path), 'w') as f:
+                f.write(json_content)
+            os.chmod(os.path.expanduser(json_path), 0o600)
+            self.__init__(self.remote_path)
 
-    def _load_or_prompt_credentials(self):
-        """Load credentials from file or prompt user"""
-        if os.path.exists(self.credentials_file):
-            with open(self.credentials_file, 'r') as f:
-                self.username = f.readline().strip()
-                self.password = f.readline().strip()
-        else:
-            print("Kaggle credentials not found. Please enter them now:")
-            self.username = input("Username: ")
-            self.password = getpass.getpass("Key: ")
-            # Save credentials
-            os.makedirs(os.path.dirname(self.credentials_file), exist_ok=True)
-            with open(self.credentials_file, 'w') as f:
-                f.write(f'{{"username":"{username}","key":"{password}"}}')
-            os.chmod(self.credentials_file, 0o600)  # Secure the credentials file
-
-    def download_file(self, local_path):
+    def download_file(self, local_path, type='dataset'):
         """Download from kaggle"""
         # Ensure the directory exists
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
 
-        # Construct the full URL
-        #url = urljoin(self.base_url, remote_path)
-
-        api = KaggleApi()
-        api.authenticate()
-
         download_path = local_path
         os.makedirs(download_path, exist_ok=True)
-        api.dataset_download_files(self.remote_path, path=download_path, unzip=True)
-
-
-
-
-
-
-
-
-        
+        try:
+            if type == 'dataset':
+                self.api.dataset_download_files(self.remote_path, path=download_path, unzip=True)
+            elif type == 'competition':
+                self.api.competition_download_files(self.remote_path, path=download_path)
+        except Exception as e:
+            print(e)
+            webpage = ""
+            if type == 'dataset':
+                webpage = "https://www.kaggle.com/datasets/" + self.remote_path
+            elif type == 'competition':
+                webpage = "https://www.kaggle.com/c/" + self.remote_path
+            print(f"Failed to download {self.remote_path} to {download_path}. Please check the remote path and your Kaggle API credentials."
+                  f"\nVisit {webpage} and apply for access if needed.")
+            raise ValueError()

@@ -17,6 +17,7 @@ from tqdm import tqdm
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 from urllib.parse import urljoin
+import time
 
 from src.datasets.specs import Input2dSpec
 
@@ -41,7 +42,7 @@ class PhysioNetDownloader:
                 self.username = f.readline().strip()
                 self.password = f.readline().strip()
         else:
-            print("PhysioNet credentials not found. Please enter them now:")
+            print("PhysioNet credentials not found. You may create an account at https://physionet.org/. Please enter them here:")
             self.username = input("Username: ")
             self.password = getpass.getpass("Password: ")
             # Save credentials
@@ -50,7 +51,7 @@ class PhysioNetDownloader:
                 f.write(f"{self.username}\n{self.password}")
             os.chmod(self.credentials_file, 0o600)  # Secure the credentials file
 
-    def download_file(self, remote_path, local_path): #, is_folder=False):
+    def download_file(self, remote_path, local_path):
         """Download a single file from PhysioNet using wget"""
         # Ensure the directory exists
         os.makedirs(os.path.dirname(local_path), exist_ok=True)
@@ -70,34 +71,37 @@ class PhysioNetDownloader:
             url
         ]
 
-        #if is_folder:
-        #    wget_command = [
-        #        'wget',
-        #        '-r',  # Recursive download
-        #        '-N',  # Only download if newer
-        #        '-c',  # Continue partially downloaded files
-        #        '--no-check-certificate',  # Skip certificate validation
-        #        '--user', self.username,
-        #        '--password', self.password,
-        #        '-P', local_path,  # Output to specific file
-        #        url
-        #    ]
+        # Retry up to 3 times
+        for attempt in range(3):
+            try:
+                # Run wget command
+                result = subprocess.run(
+                    wget_command,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    universal_newlines=True
+                )
 
-        try:
-            # Run wget command
-            result = subprocess.run(
-                wget_command,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                universal_newlines=True
-            )
+                if result.returncode == 0:
+                    return True
+                elif "403: Forbidden" in result.stderr:
+                    web_page = self.base_url.replace("/files/", "/content/")
+                    input(f"Please visit {web_page} and accept the terms of use to download this dataset."
+                          f" Press Enter to continue after accepting.")
+                else:
+                    if attempt < 2:  # Not the last attempt
+                        print(f"Attempt {attempt + 1} failed for {url}: {result.stderr}")
+                        print(f"Retrying in 2 seconds...")
+                        time.sleep(2)
+                    else:
+                        print(f"Error downloading {url} after 3 attempts: {result.stderr}")
+                        return False
 
-            if result.returncode == 0:
-                return True
-            else:
-                print(f"Error downloading {url}: {result.stderr}")
-                return False
-
-        except subprocess.SubprocessError as e:
-            print(f"Error running wget: {str(e)}")
-            return False
+            except subprocess.SubprocessError as e:
+                if attempt < 2:  # Not the last attempt
+                    print(f"Attempt {attempt + 1} failed with subprocess error: {str(e)}")
+                    print(f"Retrying in 2 seconds...")
+                    time.sleep(2)
+                else:
+                    print(f"Error running wget after 3 attempts: {str(e)}")
+                    return False

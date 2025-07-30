@@ -21,16 +21,21 @@ CLIMB comprises:
 
 A list of the datasets included in CLIMB can be found in the [Dataset Info](Dataset_Info.md). 
 
-# How to download
+# How to download:
 
-## Installing dependencies
+## Quick Start - Global Downloader
+The easiest way to download datasets is using the `download.py` script:
 
-As the first step, please install the required dependencies via
+```bash
+# Download all supported datasets
+python download.py /path/to/datasets
+
+# Download specific datasets
+python download.py /path/to/datasets --datasets mimic_cxr vindr_cxr busi
 ```
-pip install -r requirements.txt
-```
 
-## Downloading entire dataset
+## Download Individual Datasets
+
 Create an object of the corresponding dataset class. An example is shown below.
 ```
 d = BinaryBrainTumorDataset(base_root='data', download=True)
@@ -39,7 +44,7 @@ If we run this code from the root directory, the dataset will be downloaded to t
 Each dataset will be in its own directory, and the dataset directories are categorized by modality.
 For example, Brain Tumor 2 will be downloaded to `data/mri/brain_tumor_2`.
 
-To see other ways to download the dataset, please refer to the [Download Instructions](DOWNLOADER.md).
+For more download options (including selective file downloads), please refer to the [Download Instructions](DOWNLOADER.md).
 
 ### Data Distribution
 

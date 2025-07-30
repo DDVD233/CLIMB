@@ -21,6 +21,8 @@ from urllib.parse import urljoin
 from src.datasets.specs import Input2dSpec
 
 from src.datasets.physionet import PhysioNetDownloader
+import tqdm
+import gdown
 
 
 def any_exist(files):
@@ -176,10 +178,6 @@ class MIMIC_CXR(VisionDataset):
                 'Note cxr-study-list.csv.gz is from https://physionet.org/content/mimic-cxr/2.0.0/
                 """
             )
-
-    def download(self):
-        # download files to self.root
-        pass
 
 
     def build_index(self):
@@ -376,7 +374,7 @@ class MIMIC_CXR(VisionDataset):
         #print(image_files)
 
         # Download image files
-        for file in image_files:
+        for file in tqdm.tqdm(image_files, desc="Downloading images in MIMIC-CXR dataset"):
             remote_path = os.path.join("files", file)
             local_path = os.path.join(image_dir, file)
             
@@ -386,24 +384,12 @@ class MIMIC_CXR(VisionDataset):
                 if not success:
                     raise RuntimeError(f"Failed to download {file}")
 
-
-
-
-
-
-
-        
-
-        #images_folder = "p10/p10000032/"
-
-        # Download the image dataset
-        #if not os.path.exists(os.path.join(image_dir, images_folder)):  # Check if at least one image subdir exists
-        #    print("Downloading chest X-ray images...")
-        #    #success = downloader.download_file("files/", image_dir)
-        #    success = downloader.download_file(os.path.join("files/", images_folder),
-        #                                       os.path.join(image_dir, images_folder), is_folder=True)
-        #    if not success:
-        #        raise RuntimeError("Failed to download chest X-ray images")
+        annotation_ids = [("1ulMMCG5jUIglLul7hyqO4hs-vkdxapwm", "annotation_train.jsonl"),
+                          ("1qahqvU9Oz3RyNF4hpBk4c4WQF__d9UEb", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print("Download and extraction completed successfully!")
 

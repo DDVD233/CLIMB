@@ -4,6 +4,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+import gdown
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
@@ -87,6 +88,14 @@ class ISIC2020(Dataset):
             download_root=self.root,
             filename=filename
         )
+
+        annotation_ids = [("1u_PF9LOCMyFNPEQc8IRoAk0BpcddoMvO", "annotation_train.jsonl"),
+                          ("1zOEXCIZVW4Gbv6p8r7BAyxxMl8YZ46fn", "annotation_test.jsonl"),
+                          ("1iNIBJIMllPvA1b-pSQ63PmZDcPgGmJrh", "annotation_valid.jsonl"),
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print('Done!')
 

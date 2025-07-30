@@ -9,6 +9,8 @@ import pandas as pd
 import pydicom
 import tqdm
 from torchvision.datasets.vision import VisionDataset
+from src.datasets.kaggle import KaggleDownloader
+import gdown
 
 from src.datasets.specs import Input2dSpec
 
@@ -88,6 +90,8 @@ class Rspect(VisionDataset):
         """
         self.root = os.path.join(base_root, 'ct', 'rspect')
         super().__init__(self.root)
+        if download:
+            self.download()
 
         self.split = 'train' if train else 'test'
         self.classes = list(RSPECT_LABELS.keys())
@@ -229,3 +233,15 @@ class Rspect(VisionDataset):
                 in_channels=Rspect.IN_CHANNELS
             ),
         ]
+
+    def download(self):
+        downloader = KaggleDownloader("rsna-str-pulmonary-embolism-detection")
+        downloader.download_file(self.root, type="competition")
+        annotation_ids = [("1l4jgqfwIlsZo1-b6jn6fQ0oLWo4Yvsec", "annotation_train.jsonl"),
+                          ("1C1KFDb2iy8F5Nf9Syaydl1i9-vfTD8Pa", "annotation_test.jsonl")
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(os.path.join(self.root), a_name), quiet=False)
+
+        print("Successfully downloaded RSPECT dataset")

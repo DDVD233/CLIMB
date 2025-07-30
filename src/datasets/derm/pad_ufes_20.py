@@ -11,6 +11,7 @@ from torchvision import transforms
 from torchvision.datasets.utils import download_and_extract_archive, extract_archive
 
 from src.datasets.specs import Input2dSpec
+import gdown
 
 TRAIN_SPLIT_RATIO = 0.8
 
@@ -90,6 +91,14 @@ class pad_ufes_20(Dataset):
             download_root=self.root,
             filename=filename
         )
+
+        annotation_ids = [("10_0LvCPYFmn8A1CO7QYUA-gG4hDTHAlz", "annotation_train.jsonl"),
+                          ("1vDr0dDwE_Iuo5PMglf-38aQxlY8WGKie", "annotation_test.jsonl"),
+                          ("1teCJSx8DH1BC3feypMdtaBEM0akd2n8-", "annotation_valid.jsonl"),
+                          ]
+        for a_id, a_name in annotation_ids:
+            gdown.download(f"https://drive.google.com/uc?id={a_id}",
+                           os.path.join(self.root, a_name), quiet=False)
 
         print('Done!')
 
